@@ -16,6 +16,8 @@ export const transferCommand = async (msg, bot, db) => {
 
     const success = await adjustUserPoints(username.replace('@', ''), points, db, 'transfer', fromUser.username);
     if (success) {
+        // Deduct points from the sender only if the transfer was successful
+        fromUser.points -= points;
         bot.sendMessage(msg.chat.id, `You've successfully transferred ${points} GOOD points to ${username}.`);
     } else {
         bot.sendMessage(msg.chat.id, `Failed to transfer points. User ${username} not found.`);

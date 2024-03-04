@@ -2,7 +2,7 @@
   "users": [
     {
       "id": 559098686,
-      "points": 100,
+      "points": -99,
       "role": "owner",
       "username": "chiibitsu"
     },
@@ -23,8 +23,8 @@
     },
     {
       "id": 2008390276,
-      "points": 398,
-      "role": "member",
+      "points": 497,
+      "role": "admin",
       "username": "Xblanc25"
     }
   ],
