@@ -2,24 +2,30 @@
   "users": [
     {
       "id": 559098686,
-      "points": 400,
+      "points": 100,
       "role": "owner",
       "username": "chiibitsu"
     },
     {
-      "username": "firestarter88",
-      "points": 0,
+      "username": "DocVince",
+      "points": 1000000000,
       "role": "admin"
     },
     {
-      "username": "DocVince",
-      "points": 0,
+      "username": "firestarter88",
+      "points": 202188888,
+      "role": "admin"
+    },
+    {
+      "username": "DavidLee369",
+      "points": 100000,
       "role": "member"
     },
     {
-      "username": "Xblanc25",
-      "points": 0,
-      "role": "member"
+      "id": 2008390276,
+      "points": 398,
+      "role": "member",
+      "username": "Xblanc25"
     }
   ],
   "transactions": [],
