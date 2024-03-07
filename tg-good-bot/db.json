@@ -2,7 +2,7 @@
   "users": [
     {
       "id": 559098686,
-      "points": -99,
+      "points": 1,
       "role": "owner",
       "username": "chiibitsu"
     },
@@ -13,7 +13,7 @@
     },
     {
       "username": "firestarter88",
-      "points": 202188888,
+      "points": 202189987,
       "role": "admin"
     },
     {
@@ -26,6 +26,17 @@
       "points": 497,
       "role": "admin",
       "username": "Xblanc25"
+    },
+    {
+      "username": "bitlukane",
+      "points": 1000000,
+      "role": "member"
+    },
+    {
+      "id": 5103146862,
+      "points": 0,
+      "role": "user",
+      "username": "bitlukane"
     }
   ],
   "transactions": [],

@@ -12,6 +12,7 @@ import { topCommand } from './commands/top.mjs';
 import { roleCommand } from './commands/role.mjs';
 import { mydataCommand } from './commands/mydata.mjs';
 import { deleteUserCommand } from './commands/deleteUser.mjs';
+import { setPointsNameCommand } from './commands/setpointsname.mjs';
 
 const token = process.env.TG_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
@@ -30,5 +31,6 @@ const bot = new TelegramBot(token, { polling: true });
     bot.onText(/\/role/, (msg) => roleCommand(msg, bot, db));
     bot.onText(/\/mydata/, (msg) => mydataCommand(msg, bot, db));
     bot.onText(/\/delete (@\w+)/, (msg) => deleteUserCommand(msg, bot, db));
+    bot.onText(/\/setpointsname (.+)/, (msg) => mydataCommand(msg, bot, db));
     
 })();
