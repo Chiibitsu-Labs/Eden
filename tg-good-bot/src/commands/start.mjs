@@ -18,8 +18,10 @@ export const startCommand = async (msg, bot, db) => {
         userExists = { id: userId, username, points: 0, role: 'user' }; // Default role and points
         communityData.users.push(userExists);
         await db.write();
-        bot.sendMessage(chatId, `Welcome, ${username}! You've been added as a new user. Type /enroll to join our community rewards program!`);
+        console.log(`Starting /start command (new) for user ${username} in chat ${chatId}`);
+        bot.sendMessage(chatId, `Welcome, ${username}! You've been added as a new user. Type /enroll to join our Community Rewards Program!`);
     } else {
+        console.log(`Starting /start command (existing) for user ${username} in chat ${chatId}`);
         bot.sendMessage(chatId, `Welcome back, ${username}! Use /help to see all available commands.`);
     }
 };

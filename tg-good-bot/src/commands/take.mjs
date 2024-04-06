@@ -9,7 +9,7 @@ export const takeCommand = async (msg, bot, db) => {
 
     // Ensuring command format is correct and points are valid
     if (!username || isNaN(points) || points >= 0) {
-        return bot.sendMessage(msg.chat.id, "Correct format: /take @username points, where points is a positive number.");
+        return bot.sendMessage(msg.chat.id, `Correct format: /take @username ${pointsName}, where ${pointsName} is a positive number.`);
     }
 
     // Ensure the community data exists
@@ -22,11 +22,13 @@ export const takeCommand = async (msg, bot, db) => {
         return bot.sendMessage(msg.chat.id, "You're not authorized to use this command.");
     }
 
+    const pointsName = db.data.communities[chatId].settings.pointsName || "points"; // Fetching the dynamic points name
+
     // Attempting to take points and handling the outcome
     const success = await adjustUserPoints(username.replace('@', ''), points, db, chatId);
     if (success.success) {
-        bot.sendMessage(msg.chat.id, `Successfully took ${Math.abs(points)} points from ${username}.`);
+        bot.sendMessage(msg.chat.id, `Successfully took ${Math.abs(points)} ${pointsName} from ${username}.`);
     } else {
-        bot.sendMessage(msg.chat.id, success.message || "Failed to take points. User not found.");
+        bot.sendMessage(msg.chat.id, `Failed to take ${pointsName} from ${username}. ${success.message || "User not found (or not yet enrolled)."}`);
     }
 };

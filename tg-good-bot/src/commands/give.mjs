@@ -17,6 +17,8 @@ export const giveCommand = async (msg, bot, db) => {
         return bot.sendMessage(msg.chat.id, "This community has no data.");
     }
 
+    const pointsName = db.data.communities[chatId].settings.pointsName || "points"; // Fetching the dynamic points name
+
     // Checking if the user issuing the command is authorized to do so
     if (!isOwnerOrAdmin(msg.from.id, db, chatId)) {
         return bot.sendMessage(msg.chat.id, "You're not authorized to use this command.");
@@ -25,7 +27,7 @@ export const giveCommand = async (msg, bot, db) => {
     // Attempting to give points and handling the outcome
     const success = await adjustUserPoints(username.replace('@', ''), points, db, chatId);
     if (success.success) {
-        bot.sendMessage(msg.chat.id, `Successfully gave ${points} points to ${username}.`);
+        bot.sendMessage(msg.chat.id, `Successfully gave ${points} ${pointsName} to ${username}.`); // Using pointsName
     } else {
         bot.sendMessage(msg.chat.id, success.message || "Failed to give points. User not found.");
     }

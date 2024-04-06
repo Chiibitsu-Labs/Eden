@@ -1,12 +1,14 @@
 // src/utils/roleChecks.mjs
 
-// Adjusted to check roles within a community context
+// This function checks if a user is an admin or owner within a specific community.
 export const isOwnerOrAdmin = (userId, db, chatId) => {
   const user = db.data.communities[chatId]?.users.find(user => user.id === userId);
-  const userRoleLevel = getRoleLevel(user?.role, db, chatId);
-  const adminRoleLevel = getRoleLevel('admin', db, chatId);
-  return userRoleLevel >= adminRoleLevel;
+  if (!user) return false; // User not found in this community
+  
+  // Assuming 'owner' and 'admin' roles have been correctly set in your community or global settings
+  return ['owner', 'admin'].includes(user.role);
 };
+
 
 export const getRoleLevel = (roleName, db, chatId) => {
   // Check for community-specific roles first
