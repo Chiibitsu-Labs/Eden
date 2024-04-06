@@ -1,4 +1,6 @@
 // commands/setpointsname.mjs
+import { isOwnerOrAdmin } from '../utils/roleChecks.mjs';
+
 export const setPointsNameCommand = (msg, bot, db) => {
   const fromId = msg.from.id;
   const fromUser = db.data.users.find(user => user.id === fromId);

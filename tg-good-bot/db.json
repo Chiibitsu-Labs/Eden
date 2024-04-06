@@ -1,12 +1,6 @@
 {
   "users": [
     {
-      "id": 559098686,
-      "points": 1,
-      "role": "owner",
-      "username": "chiibitsu"
-    },
-    {
       "username": "DocVince",
       "points": 1000000000,
       "role": "admin"
@@ -28,9 +22,10 @@
       "username": "Xblanc25"
     },
     {
-      "username": "bitlukane",
-      "points": 1000000,
-      "role": "member"
+      "id": 559098686,
+      "points": 0,
+      "role": "owner",
+      "username": "chiibitsu"
     },
     {
       "id": 5103146862,
@@ -65,5 +60,6 @@
       "name": "user",
       "level": 1
     }
-  ]
+  ],
+  "pointsName": "Oro"
 }

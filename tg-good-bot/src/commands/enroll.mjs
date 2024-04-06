@@ -24,22 +24,32 @@ export const enrollCommand = async (msg, bot, db) => {
         return bot.sendMessage(msg.chat.id, "Only an owner can assign the owner role.");
     }
 
-    // Add or update user role
+    // If user is already enrolled, don't update their role unless specified by an admin or owner.
+
     if (!targetUser) {
         // If target user doesn't exist, add them
-        db.data.users.push({ username: targetUsername, points: 0, role: specifiedRole });
-    } else {
-        // Prevent role downgrade, only allow role upgrade or same-level role assignment
-        const currentRoleLevel = getRoleLevel(targetUser.role, db);
-        const newRoleLevel = getRoleLevel(specifiedRole, db);
-
-        if (newRoleLevel > currentRoleLevel && isAdminOrOwnerIssuing) {
-            targetUser.role = specifiedRole; // Update role if higher and issued by admin/owner
+        db.data.users.push({ id: fromId, username: targetUsername, points: 0, role: specifiedRole });
+        await db.write();
+        bot.sendMessage(msg.chat.id, `User ${targetUsername} has been enrolled as ${specifiedRole}.`);
+    } else if (fromId === targetUser.id || isAdminOrOwnerIssuing) {
+        // If user is self-enrolling again or admin/owner is updating the role
+        if (specifiedRole !== targetUser.role) {
+            const canChangeRole = specifiedRole !== 'owner' || fromUser.role === 'owner'; // Only owner can assign 'owner' role
+            if (canChangeRole) {
+                targetUser.role = specifiedRole;
+                await db.write();
+                bot.sendMessage(msg.chat.id, `User ${targetUsername}'s role updated to ${specifiedRole}.`);
+            } else {
+                bot.sendMessage(msg.chat.id, "You cannot assign 'owner' role.");
+            }
         } else {
-            return bot.sendMessage(msg.chat.id, "You cannot downgrade roles or assign roles higher than your own.");
+            bot.sendMessage(msg.chat.id, `User ${targetUsername} is already enrolled as ${specifiedRole}.`);
         }
+    } else {
+        // Prevent unauthorized role changes
+        bot.sendMessage(msg.chat.id, "You cannot change other users' roles.");
     }
-
+    
     await db.write();
     bot.sendMessage(msg.chat.id, `User ${targetUsername} has been enrolled as ${specifiedRole}.`);
 };
