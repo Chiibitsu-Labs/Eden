@@ -3,22 +3,30 @@ import { isOwnerOrAdmin } from '../utils/roleChecks.mjs';
 import { adjustUserPoints } from '../utils/userOps.mjs';
 
 export const giveCommand = async (msg, bot, db) => {
-    const match = msg.text.match(/\/give (@\w+) (\d+)/);
-    if (!match) {
-        return bot.sendMessage(msg.chat.id, "Invalid command format. Use: /give @username points");
-    }
-    const [, username, pointsStr] = match;
+    const chatId = msg.chat.id.toString(); // Community-specific identifier
+    const [, username, pointsStr] = msg.text.match(/\/give (@\w+) (\d+)/) || [];
     const points = parseInt(pointsStr, 10);
-    const fromUser = db.data.users.find(user => user.id === msg.from.id);
 
-    if (!isOwnerOrAdmin(fromUser, db) || isNaN(points) || points <= 0) {
-        return bot.sendMessage(msg.chat.id, "You're not authorized or invalid points value.");
+    // Ensuring command format is correct and points are valid
+    if (!username || isNaN(points) || points <= 0) {
+        return bot.sendMessage(msg.chat.id, "Correct format: /give @username points, where points is a positive number.");
     }
 
-    const success = await adjustUserPoints(username.replace('@', ''), points, db);
-    if (success) {
+    // Ensure the community data exists
+    if (!db.data.communities[chatId]) {
+        return bot.sendMessage(msg.chat.id, "This community has no data.");
+    }
+
+    // Checking if the user issuing the command is authorized to do so
+    if (!isOwnerOrAdmin(msg.from.id, db, chatId)) {
+        return bot.sendMessage(msg.chat.id, "You're not authorized to use this command.");
+    }
+
+    // Attempting to give points and handling the outcome
+    const success = await adjustUserPoints(username.replace('@', ''), points, db, chatId);
+    if (success.success) {
         bot.sendMessage(msg.chat.id, `Successfully gave ${points} points to ${username}.`);
     } else {
-        bot.sendMessage(msg.chat.id, `Failed to give points. User ${username} not found.`);
+        bot.sendMessage(msg.chat.id, success.message || "Failed to give points. User not found.");
     }
 };

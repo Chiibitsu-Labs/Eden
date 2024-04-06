@@ -1,31 +1,35 @@
 // src/utils/roleChecks.mjs
 
-export const isOwnerOrAdmin = (user, db) => {
-  if (!user) {
-    console.error('User not found.');
-    return false;
-  }
-
-  const userRoleLevel = db.data.roles.find(role => role.name === user.role)?.level;
-  const adminRoleLevel = db.data.roles.find(role => role.name === 'admin')?.level;
-
+// Adjusted to check roles within a community context
+export const isOwnerOrAdmin = (userId, db, chatId) => {
+  const user = db.data.communities[chatId]?.users.find(user => user.id === userId);
+  const userRoleLevel = getRoleLevel(user?.role, db, chatId);
+  const adminRoleLevel = getRoleLevel('admin', db, chatId);
   return userRoleLevel >= adminRoleLevel;
 };
 
-export const getRoleLevel = (roleName, db) => {
-  const role = db.data.roles.find(role => role.name === roleName);
+export const getRoleLevel = (roleName, db, chatId) => {
+  // Check for community-specific roles first
+  const communityRoles = db.data.communities[chatId]?.roles;
+  let role = communityRoles?.find(role => role.name === roleName);
+  
+  // If no community-specific role found, fall back to global roles
+  if (!role) {
+    role = db.data.globalRoles?.find(role => role.name === roleName);
+  }
+
   return role ? role.level : null;
 };
 
-export const updateUserRole = async (username, newRole, db) => {
-  const user = db.data.users.find(user => user.username === username);
-  if (!user) return false; // User not found
-
-  // Update user's role
+// Adjusted for community context
+export const updateUserRole = async (username, newRole, db, chatId) => {
+  const user = db.data.communities[chatId]?.users.find(u => u.username === username);
+  if (!user) {
+    return { success: false, message: "User not found" };
+  }
   user.role = newRole;
-
-  await db.write(); // Save changes to the database
-  return true; // Successfully updated
+  await db.write();
+  return { success: true, message: `User ${username}'s role updated to ${newRole}.` };
 };
 
 // Check owner role

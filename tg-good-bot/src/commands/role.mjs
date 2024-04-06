@@ -1,37 +1,45 @@
 // commands/role.mjs
+import { isOwnerOrAdmin, updateUserRole, getRoleLevel } from '../utils/roleChecks.mjs';
+
 export const roleCommand = async (msg, bot, db) => {
+  const chatId = msg.chat.id.toString();
   const match = msg.text.match(/\/role(?:\s+@(\w+))?(?:\s+(\w+))?/);
-  const targetUsername = match && match[1] ? match[1] : msg.from.username;
+  const targetUsername = match && match[1] ? match[1] : (msg.from.username || msg.from.first_name);
   const newRole = match && match[2];
 
-  // Fetch sender and target user information
-  const fromUser = db.data.users.find(user => user.id === msg.from.id);
-  const targetUser = db.data.users.find(user => user.username === targetUsername);
+  // Ensure community data is available
+  if (!db.data.communities[chatId]) {
+    return bot.sendMessage(msg.chat.id, "This community has no data.");
+  }
+
+  const communityData = db.data.communities[chatId];
+  const fromUser = communityData.users.find(user => user.id === msg.from.id);
+  const targetUser = communityData.users.find(user => user.username === targetUsername);
 
   if (!newRole) {
-      // If no new role is specified, simply return the user's current role
-      if (targetUser) {
-          bot.sendMessage(msg.chat.id, `${targetUsername}'s role: ${targetUser.role}`);
-      } else {
-          bot.sendMessage(msg.chat.id, "User not found.");
-      }
+    // Display current role of the user
+    if (targetUser) {
+      bot.sendMessage(msg.chat.id, `${targetUsername}'s role: ${targetUser.role}`);
+    } else {
+      bot.sendMessage(msg.chat.id, "User not found.");
+    }
   } else {
-      // Attempt to update role if the sender is an admin or owner
-      if (fromUser && (fromUser.role === 'admin' || fromUser.role === 'owner')) {
-          if (targetUser) {
-              // Prevent role elevation above admin for non-owners
-              if (fromUser.role !== 'owner' && newRole === 'owner') {
-                  bot.sendMessage(msg.chat.id, "Only owners can assign the owner role.");
-                  return;
-              }
-              targetUser.role = newRole;
-              await db.write();
-              bot.sendMessage(msg.chat.id, `${targetUsername}'s role updated to ${newRole}.`);
-          } else {
-              bot.sendMessage(msg.chat.id, "User not found.");
-          }
+    // Check permission and update role
+    if (isOwnerOrAdmin(msg.from.id, db, chatId)) {
+      if (targetUser) {
+        // Prevent non-owners from assigning 'owner' role
+        if (getRoleLevel(newRole, db, chatId) > getRoleLevel(fromUser.role, db, chatId)) {
+          return bot.sendMessage(msg.chat.id, "You cannot assign roles higher than your own.");
+        }
+
+        // Apply the role update
+        await updateUserRole(targetUsername, newRole, db, chatId);
+        bot.sendMessage(msg.chat.id, `${targetUsername}'s role updated to ${newRole}.`);
       } else {
-          bot.sendMessage(msg.chat.id, "You don't have permission to change roles.");
+        bot.sendMessage(msg.chat.id, "User not found.");
       }
+    } else {
+      bot.sendMessage(msg.chat.id, "You don't have permission to change roles.");
+    }
   }
 };

@@ -1,14 +1,15 @@
 // src/commands/mydata.mjs
 export const mydataCommand = (msg, bot, db) => {
-  const user = db.data.users.find(user => user.id === msg.from.id);
-  if (!user) {
-      return bot.sendMessage(msg.chat.id, "You're not registered.");
+  const chatId = msg.chat.id.toString();
+  if (!db.data.communities[chatId]) {
+    return bot.sendMessage(msg.chat.id, "This community has no data.");
   }
 
-  const userData = `
-      Username: ${user.username || 'N/A'}
-      Role: ${user.role}
-      Points: ${user.points}
-  `;
-  bot.sendMessage(msg.chat.id, userData.trim());
+  const user = db.data.communities[chatId].users.find(user => user.id === msg.from.id);
+  if (user) {
+      const userData = `Username: ${user.username || 'N/A'}\nRole: ${user.role}\nPoints: ${user.points}`;
+      bot.sendMessage(msg.chat.id, userData);
+  } else {
+      bot.sendMessage(msg.chat.id, "You're not registered.");
+  }
 };

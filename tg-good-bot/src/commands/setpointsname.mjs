@@ -2,21 +2,15 @@
 import { isOwnerOrAdmin } from '../utils/roleChecks.mjs';
 
 export const setPointsNameCommand = (msg, bot, db) => {
-  const fromId = msg.from.id;
-  const fromUser = db.data.users.find(user => user.id === fromId);
+  const chatId = msg.chat.id.toString();
+  const fromUser = db.data.communities[chatId].users.find(user => user.id === msg.from.id);
 
-  if (!isOwnerOrAdmin(fromUser, db)) {
-      return bot.sendMessage(msg.chat.id, "You're not authorized to perform this action.");
+  if (!isOwnerOrAdmin(fromUser, db, chatId)) {
+    return bot.sendMessage(msg.chat.id, "You're not authorized to perform this action.");
   }
 
-  const match = msg.text.match(/\/setpointsname (.+)/);
-  if (!match) return bot.sendMessage(msg.chat.id, "Invalid command format.");
-
-  const [, newPointsName] = match;
-
-  // Update points name in the database
-  db.data.pointsName = newPointsName;
+  const [, newPointsName] = msg.text.match(/\/setpointsname (.+)/) || [];
+  db.data.communities[chatId].pointsName = newPointsName;
   db.write();
-
-  bot.sendMessage(msg.chat.id, `Points name updated to ${newPointsName}`);
+  bot.sendMessage(msg.chat.id, `Points name updated to ${newPointsName} for this community.`);
 };

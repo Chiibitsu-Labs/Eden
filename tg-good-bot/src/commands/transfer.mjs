@@ -2,24 +2,25 @@
 import { adjustUserPoints } from '../utils/userOps.mjs';
 
 export const transferCommand = async (msg, bot, db) => {
-    const match = msg.text.match(/\/transfer (@\w+) (\d+)/);
-    if (!match) {
-        return bot.sendMessage(msg.chat.id, "Invalid command format. Use: /transfer @username points");
-    }
-    const [, username, pointsStr] = match;
+    const chatId = msg.chat.id.toString(); // Community-specific identifier
+    const [, username, pointsStr] = msg.text.match(/\/transfer (@\w+) (\d+)/) || [];
     const points = parseInt(pointsStr, 10);
-    const fromUser = db.data.users.find(user => user.id === msg.from.id);
 
-    if (!fromUser || fromUser.points < points || isNaN(points) || points <= 0) {
-        return bot.sendMessage(msg.chat.id, "You do not have enough points or invalid points value.");
+    if (!username || isNaN(points)) {
+        return bot.sendMessage(msg.chat.id, "Correct format: /transfer @username points");
     }
 
-    const success = await adjustUserPoints(username.replace('@', ''), points, db);
+    const fromUser = db.data.communities[chatId].users.find(user => user.id === msg.from.id);
+
+    if (fromUser.points < points) {
+        return bot.sendMessage(msg.chat.id, "You do not have enough points.");
+    }
+
+    const success = await adjustUserPoints(username.replace('@', ''), points, db, chatId);
     if (success) {
-        fromUser.points -= points; // Deduct points from the sender
-        await db.write(); // Ensure the database is updated
+        await adjustUserPoints(fromUser.username, -points, db, chatId); // Deduct points from the sender
         bot.sendMessage(msg.chat.id, `You've successfully transferred ${points} points to ${username}.`);
     } else {
-        bot.sendMessage(msg.chat.id, `Failed to transfer points. User ${username} not found.`);
+        bot.sendMessage(msg.chat.id, "Failed to transfer points. User not found.");
     }
 };

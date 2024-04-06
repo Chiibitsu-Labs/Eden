@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "username": "DocVince",
+      "points": 1000000000,
+      "role": "admin"
+    },
+    {
+      "username": "firestarter88",
+      "points": 202190007,
+      "role": "admin"
+    },
+    {
+      "username": "DavidLee369",
+      "points": 100000,
+      "role": "member"
+    },
+    {
+      "id": 2008390276,
+      "points": 497,
+      "role": "admin",
+      "username": "Xblanc25"
+    },
+    {
+      "id": 559098686,
+      "points": 90,
+      "role": "owner",
+      "username": "chiibitsu"
+    },
+    {
+      "id": 5103146862,
+      "points": 0,
+      "role": "user",
+      "username": "bitlukane"
+    }
+  ],
+  "transactions": [],
+  "roles": [
+    {
+      "name": "owner",
+      "level": 10
+    },
+    {
+      "name": "admin",
+      "level": 5
+    },
+    {
+      "name": "leader",
+      "level": 4
+    },
+    {
+      "name": "advocate",
+      "level": 3
+    },
+    {
+      "name": "member",
+      "level": 2
+    },
+    {
+      "name": "user",
+      "level": 1
+    }
+  ],
+  "pointsName": "Oro"
+}

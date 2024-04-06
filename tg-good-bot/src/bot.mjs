@@ -39,12 +39,12 @@ const bot = new TelegramBot(token, { polling: true });
     bot.onText(/\/start/, (msg) => startCommand(msg, bot, db));
     // Add other command listeners here
 
-    // Listen for new chat members
+    // Welcome new members
     bot.on('message', (msg) => {
         if (msg.new_chat_members && msg.new_chat_members.length > 0) {
-            // Fetch welcome message from database or use a default message
-            const welcomeMessage = db.data.welcomeMessage || "Welcome! Type /start to get started and /enroll to join the rewards program.";
-            bot.sendMessage(msg.chat.id, welcomeMessage);
+            const chatId = msg.chat.id.toString();
+            const welcomeMessage = db.data.communities[chatId]?.welcomeMessage || "Welcome to the community! Type /start to get started.";
+            bot.sendMessage(chatId, welcomeMessage);
         }
     });    
     
